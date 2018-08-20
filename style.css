@@ -1,0 +1,14 @@
+body {
+  background-color: rgb(27, 1, 48);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#floor {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  background-repeat: no-repeat;
+  background-color: #000;
+}
