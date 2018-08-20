@@ -5,4 +5,10 @@ export class Entity {
     this.sprite = sprite;
     this.isSolid = isSolid;
   }
+  update() {
+
+  }
+  draw(ctx) {
+    this.sprite.draw(ctx, this.x, this.y);
+  }
 }

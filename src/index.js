@@ -1,7 +1,6 @@
 import { Layout } from './layout';
 import { input, KEYS } from './input';
-import { Entity } from './entity';
-import { Sprite } from './sprite';
+import { Player } from './player';
 
 // import { timer } from './timer';
 
@@ -25,22 +24,21 @@ function run() {
   floor.style.height = vh;
   floor.style.backgroundImage = `url(${layout.baseCanvas.toDataURL()})`;
   floor.style.backgroundSize = `${layoutSize.width * scale}px ${layoutSize.height * scale}px `;
-  const player = new Sprite();
+  const player = new Player(vw / scale / 2 - 8, vh / scale / 2 - 8);
 
   let cx = layout.startPos.x * 16;
   let cy = layout.startPos.y * 16;
   function drawLoop(time) {
     requestAnimationFrame(drawLoop);
-    if (input.isPressing(KEYS.LEFT)) cx--;
-    if (input.isPressing(KEYS.RIGHT)) cx++;
-    if (input.isPressing(KEYS.UP)) cy--;
-    if (input.isPressing(KEYS.DOWN)) cy++;
+    floorCtx.clearRect(0, 0, vw, vh);
+    player.update();
 
     const x = -(cx * scale) + vw / 2;
     const y = -(cy * scale) + vh / 2;
     floor.style.backgroundPositionX = `${x}px`;
     floor.style.backgroundPositionY = `${y}px`;
-    player.draw(floorCtx, vw / scale / 2 - 8, vh / scale / 2 - 8);
+    
+    player.draw(floorCtx);
   }
   drawLoop();
 }
