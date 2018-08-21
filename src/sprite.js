@@ -1,10 +1,11 @@
-import { characters } from './images';
-import { timer } from './timer';
+import { characters, tileset } from "./images";
+import { timer } from "./timer";
 
 const loadImage = src => Object.assign(new Image(), { src });
 
 const sheets = {
   characters: loadImage(characters),
+  tiles: loadImage(tileset)
 };
 
 const size = 16;
@@ -13,21 +14,21 @@ export class Sprite {
   constructor(sheet, variants) {
     this.sheet = sheet;
     this.variants = variants;
-    this.timerId = '';
+    this.timerId = "";
     this.setVariant(0);
   }
   setVariant(num) {
-    if(num === this.variant) return;
+    if (num === this.variant) return;
     timer.off(this.timerId);
     this.variant = num;
-    const {tile, speed} = this.variants[num];
+    const { tile, speed } = this.variants[num];
     this.isAnimated = !!speed;
     if (this.isAnimated) {
       let index = 0;
       this.timerId = timer.on(() => {
         index = ++index % tile.length;
-        this.frame = tile[index]
-      }, speed)
+        this.frame = tile[index];
+      }, speed);
       this.frame = tile[index];
     } else {
       this.frame = tile;
@@ -40,7 +41,7 @@ export class Sprite {
   }
 }
 
-export const hero = new Sprite('characters', [
+export const hero = new Sprite("characters", [
   { tile: [7, 0] },
   { tile: [7, 1] },
   { tile: [7, 2] },
@@ -51,15 +52,23 @@ export const hero = new Sprite('characters', [
   },
   {
     speed: 6,
-    tile: [[6, 1], [7, 1], [8, 1], [7, 1]],
+    tile: [[6, 1], [7, 1], [8, 1], [7, 1]]
   },
   {
     speed: 6,
-    tile: [[6, 2], [7, 2], [8, 2], [7, 2]],
+    tile: [[6, 2], [7, 2], [8, 2], [7, 2]]
   },
   {
     speed: 6,
-    tile: [[6, 3], [7, 3], [8, 3], [7, 3]],
-  },
+    tile: [[6, 3], [7, 3], [8, 3], [7, 3]]
+  }
+]);
 
-])
+export const floor = new Sprite("tiles", [{ tile: [2, 1] }]);
+
+export const wall = new Sprite("tiles", [
+  { tile: [1, 3] },
+  { tile: [2, 4] },
+  { tile: [1, 5] },
+  { tile: [0, 4] }
+]);

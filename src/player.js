@@ -1,47 +1,54 @@
-import { input, KEYS } from './input';
-import { hero } from './sprite';
-import { Entity } from './entity';
-
-const sprite = {
-  [KEYS.DOWN]: 0,
-  [KEYS.LEFT]: 1,
-  [KEYS.UP]: 3,
-  [KEYS.RIGHT]: 2,
-}
+import { input, KEYS } from "./input";
+import { hero } from "./sprite";
+import { Entity } from "./entity";
 
 export class Player extends Entity {
   constructor(x, y) {
     super(x, y, hero, true);
-    this.direction = {
-      [KEYS.DOWN]: true,
-      [KEYS.LEFT]: false,
-      [KEYS.UP]: false,
-      [KEYS.RIGHT]: false,
-    }
     this.isMoving = false;
     this.variant = 0;
   }
 
-  update() {
+  update(floorMap) {
     this.isMoving = false;
-    Object.keys(sprite).forEach(key => {      
-      if(input.isPressing(key)){
-        this.isMoving = true;
-        this.variant = sprite[key];
-      }
-    })
-    this.sprite.setVariant(this.isMoving ? this.variant + 4: this.variant);
+    const low = val => (val + 4) >> 4;
+    const high = val => (val + 12) >> 4;
+    const floorY1 = low(this.y);
+    const floorY2 = high(this.y);
+    const floorX1 = low(this.x);
+    const floorX2 = high(this.x);
     if (input.isPressing(KEYS.LEFT)) {
-      this.x--;
+      this.variant = 1;
+      const x = low(this.x - 1);
+      if (floorMap[x][floorY1] && floorMap[x][floorY2]) {
+        this.x--;
+        this.isMoving = true;
+      }
     }
     if (input.isPressing(KEYS.RIGHT)) {
-      this.x++;
+      this.variant = 2;
+      const x = high(this.x + 1);
+      if (floorMap[x][floorY1] && floorMap[x][floorY2]) {
+        this.x++;
+        this.isMoving = true;
+      }
     }
     if (input.isPressing(KEYS.UP)) {
-      this.y--;
+      this.variant = 3;
+      const y = low(this.y - 1);
+      if (floorMap[floorX1][y] && floorMap[floorX2][y]) {
+        this.y--;
+        this.isMoving = true;
+      }
     }
     if (input.isPressing(KEYS.DOWN)) {
-      this.y++;
+      this.variant = 0;
+      const y = high(this.y + 1);
+      if (floorMap[floorX1][y] && floorMap[floorX2][y]) {
+        this.y++;
+        this.isMoving = true;
+      }
     }
+    this.sprite.setVariant(this.isMoving ? this.variant + 4 : this.variant);
   }
 }
