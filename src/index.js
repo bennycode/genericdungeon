@@ -1,13 +1,6 @@
-import { Layout } from "./layout";
-import { input, KEYS } from "./input";
-import { Player } from "./player";
 import { Scene } from "./scene";
 import { timer } from "./timer";
 import { onload } from "./sprite";
-
-// import { timer } from './timer';
-
-onload(run);
 
 const vw = 640;
 const vh = 480;
@@ -19,6 +12,8 @@ floor.width = vw / scale;
 floor.height = vh / scale;
 floor.style.width = vw;
 floor.style.height = vh;
+
+onload(run);
 
 function run() {
   const scene = new Scene(floorCtx, 30);
