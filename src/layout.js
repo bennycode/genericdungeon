@@ -14,15 +14,15 @@ export class Layout {
 
     this.setValidNeighbors();
 
-    const center = this.getMostCenterRoom();
-    center.setStart();
+    this.startRoom = this.getMostCenterRoom();
+    this.endRoom = this.rooms[this.rooms.length - 1];
 
-    this.rooms = this.getConnectedRooms(center);
+    this.rooms = this.getConnectedRooms(this.startRoom);
     this.normalizeCoords();
     this.map = this.makeMap();
     this.doors = this.makeDoors();
-    this.startPos = center.getCenter(true);
-    this.endPos = this.rooms[this.rooms.length - 1].getCenter(true);
+    this.startPos = this.startRoom.getCenter(true);
+    this.endPos = this.endRoom.getCenter(true);
   }
 
   makeRooms(count) {

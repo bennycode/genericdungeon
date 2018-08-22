@@ -1,6 +1,7 @@
 import { Layout } from "./layout";
 import { Player } from "./player";
-import { floor, wall, start, exit, door } from "./sprite";
+import { floor, wall, start, exit, door, torch } from "./sprite";
+import { randFromArray } from "./util";
 
 const spriteSize = 16;
 
@@ -25,11 +26,33 @@ export class Scene {
     fogCtx.fillStyle = "#000";
     fogCtx.fillRect(0, 0, this.fogCanvas.width, this.fogCanvas.height);
     this.unveilFog(this.layout.startPos.x, this.layout.startPos.y);
+    this.torches = this.placeTorches();
   }
 
   update() {
     this.player.update(this.layout.map);
     this.checkOpenDoors();
+  }
+
+  placeTorches() {
+    const torches = [];
+    const max = Math.floor(this.layout.rooms.length / 3);
+    const torchRooms = [this.layout.startRoom, this.layout.endRoom];
+    while (torchRooms.length < max) {
+      const rooms = this.layout.rooms.filter(
+        room => !torchRooms.includes(room)
+      );
+      torchRooms.push(randFromArray(rooms));
+    }
+    torchRooms.forEach(({ x, y, x2, y2 }) => {
+      torches.push(
+        { x: x + 1, y: y + 1 },
+        { x: x + 1, y: y2 - 1 },
+        { x: x2 - 1, y: y + 1 },
+        { x: x2 - 1, y: y2 - 1 }
+      );
+    });
+    return torches;
   }
 
   checkOpenDoors() {
@@ -53,12 +76,9 @@ export class Scene {
     const room = this.layout.getRoomAtPosition(x, y);
     if (room) {
       const fogCtx = this.fogCanvas.getContext("2d");
-      fogCtx.clearRect(
-        room.x * spriteSize,
-        room.y * spriteSize,
-        (room.w + 1) * spriteSize,
-        (room.h + 1) * spriteSize
-      );
+      const [x, y] = [room.x * spriteSize, room.y * spriteSize];
+      const [w, h] = [(room.w + 1) * spriteSize, (room.h + 1) * spriteSize];
+      fogCtx.clearRect(x, y, w, h);
     }
   }
 
@@ -114,6 +134,9 @@ export class Scene {
       this.ctx,
       this.layout.endPos.x * spriteSize,
       this.layout.endPos.y * spriteSize
+    );
+    this.torches.forEach(({ x, y }) =>
+      torch.draw(this.ctx, x * spriteSize, y * spriteSize)
     );
     this.ctx.drawImage(
       this.fogCanvas,

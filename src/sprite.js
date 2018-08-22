@@ -1,10 +1,11 @@
-import { characters, tileset } from "./images";
+import { characters, things, tileset } from "./images";
 import { timer } from "./timer";
 
 const loadImage = src => Object.assign(new Image(), { src });
 
 const sheets = {
   characters: loadImage(characters),
+  things: loadImage(things),
   tiles: loadImage(tileset)
 };
 
@@ -76,3 +77,9 @@ export const wall = new Sprite("tiles", [
 export const door = new Sprite("tiles", [{ tile: [0, 6] }]);
 export const start = new Sprite("tiles", [{ tile: [0, 7] }]);
 export const exit = new Sprite("tiles", [{ tile: [1, 7] }]);
+export const torch = new Sprite("things", [
+  {
+    speed: 4,
+    tile: [[0, 4], [1, 4], [2, 4], [1, 4]]
+  }
+]);
