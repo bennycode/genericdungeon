@@ -9,6 +9,22 @@ const sheets = {
   tiles: loadImage(tileset)
 };
 
+export const onload = callback => {
+  const loadCount = Object.keys(sheets).length;
+  let loaded = 0;
+  const loadSheet = () => {
+    if (++loaded >= loadCount) {
+      callback();
+    }
+  };
+  Object.values(sheets).forEach(sheet => {
+    if (sheet.complete) {
+      loadSheet();
+    }
+    sheet.onload = loadSheet;
+  });
+};
+
 const size = 16;
 
 export class Sprite {
