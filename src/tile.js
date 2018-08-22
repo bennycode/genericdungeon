@@ -11,9 +11,9 @@ const TYPES = {
 const SPRITE_POSITIONS = {
   [TYPES.WALL]: [0, 3],
   [TYPES.FLOOR]: [1, 2],
-  [TYPES.DOOR]: [6, 0],
-  [TYPES.UPSTAIRS]: [7, 0],
-  [TYPES.DOWNSTAIRS]: [7, 1],
+  [TYPES.DOOR]: [0, 7],
+  [TYPES.UPSTAIRS]: [0, 7],
+  [TYPES.DOWNSTAIRS]: [1, 7],
 };
 
 const FLOOR_BG =  [

@@ -1,6 +1,6 @@
 import { Layout } from "./layout";
 import { Player } from "./player";
-import { floor, wall } from "./sprite";
+import { floor, wall, start, exit, door } from "./sprite";
 
 const spriteSize = 16;
 
@@ -63,6 +63,9 @@ export class Scene {
       y,
       this.width,
       this.height
+    );
+    this.layout.doors.forEach(({ x, y }) =>
+      door.draw(this.ctx, x * spriteSize, y * spriteSize)
     );
     this.player.draw(this.ctx);
   }

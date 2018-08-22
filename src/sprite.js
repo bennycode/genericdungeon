@@ -72,3 +72,7 @@ export const wall = new Sprite("tiles", [
   { tile: [1, 5] },
   { tile: [0, 4] }
 ]);
+
+export const door = new Sprite("tiles", [{ tile: [0, 6] }]);
+export const start = new Sprite("tiles", [{ tile: [0, 7] }]);
+export const exit = new Sprite("tiles", [{ tile: [1, 7] }]);

@@ -13,8 +13,8 @@ export class Player extends Entity {
     this.isMoving = false;
     const low = val => (val + 4) >> 4;
     const high = val => (val + 12) >> 4;
-    const floorY1 = low(this.y);
-    const floorY2 = high(this.y);
+    const floorY1 = low(this.y + 3);
+    const floorY2 = high(this.y + 3);
     const floorX1 = low(this.x);
     const floorX2 = high(this.x);
     if (input.isPressing(KEYS.LEFT)) {
@@ -35,7 +35,7 @@ export class Player extends Entity {
     }
     if (input.isPressing(KEYS.UP)) {
       this.variant = 3;
-      const y = low(this.y - 1);
+      const y = low(this.y - 1 + 3);
       if (floorMap[floorX1][y] && floorMap[floorX2][y]) {
         this.y--;
         this.isMoving = true;
@@ -43,7 +43,7 @@ export class Player extends Entity {
     }
     if (input.isPressing(KEYS.DOWN)) {
       this.variant = 0;
-      const y = high(this.y + 1);
+      const y = high(this.y + 1 + 3);
       if (floorMap[floorX1][y] && floorMap[floorX2][y]) {
         this.y++;
         this.isMoving = true;
