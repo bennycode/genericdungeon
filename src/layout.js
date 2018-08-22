@@ -67,6 +67,12 @@ export class Layout {
     }
   }
 
+  getRoomAtPosition(x, y) {
+    return this.rooms.find(
+      room => x > room.x && x < room.x2 && y > room.y && y < room.y2
+    );
+  }
+
   normalizeCoords() {
     const { x, y } = Rect.fromRects(this.rooms);
     this.rooms.forEach(room => {
@@ -167,7 +173,7 @@ export class Layout {
     return map;
   }
 
-  getMapSize() {
+  get mapSize() {
     const allRoomBounds = Rect.fromRects(this.rooms);
     return {
       width: (allRoomBounds.w + 1) * this.tileSize,

@@ -18,14 +18,52 @@ export class Scene {
     );
     this.bgCanvas = document.createElement("canvas");
     this.updateBgCanvas();
+    this.fogCanvas = document.createElement("canvas");
+    this.fogCanvas.width = this.bgCanvas.width;
+    this.fogCanvas.height = this.bgCanvas.height;
+    const fogCtx = this.fogCanvas.getContext("2d");
+    fogCtx.fillStyle = "#000";
+    fogCtx.fillRect(0, 0, this.fogCanvas.width, this.fogCanvas.height);
+    this.unveilFog(this.layout.startPos.x, this.layout.startPos.y);
   }
 
   update() {
     this.player.update(this.layout.map);
+    this.checkOpenDoors();
+  }
+
+  checkOpenDoors() {
+    const { x1, x2, y1, y2 } = this.player.collisionBox;
+    const doors = this.layout.doors;
+    for (let i = doors.length - 1; i >= 0; i--) {
+      const { x: doorX, y: doorY } = doors[i];
+      const [doorX1, doorY1] = [doorX * spriteSize, doorY * spriteSize];
+      const [doorX2, doorY2] = [doorX1 + spriteSize, doorY1 + spriteSize];
+      if (x2 > doorX1 && x1 < doorX2 && y2 > doorY1 && y1 < doorY2) {
+        this.layout.doors.splice(i, 1);
+        this.unveilFog(doorX - 1, doorY);
+        this.unveilFog(doorX + 1, doorY);
+        this.unveilFog(doorX, doorY - 1);
+        this.unveilFog(doorX, doorY + 1);
+      }
+    }
+  }
+
+  unveilFog(x, y) {
+    const room = this.layout.getRoomAtPosition(x, y);
+    if (room) {
+      const fogCtx = this.fogCanvas.getContext("2d");
+      fogCtx.clearRect(
+        room.x * spriteSize,
+        room.y * spriteSize,
+        (room.w + 1) * spriteSize,
+        (room.h + 1) * spriteSize
+      );
+    }
   }
 
   updateBgCanvas() {
-    const { width, height } = this.layout.getMapSize();
+    const { width, height } = this.layout.mapSize;
     this.bgCanvas.width = width;
     this.bgCanvas.height = height;
     const ctx = this.bgCanvas.getContext("2d");
@@ -66,6 +104,27 @@ export class Scene {
     );
     this.layout.doors.forEach(({ x, y }) =>
       door.draw(this.ctx, x * spriteSize, y * spriteSize)
+    );
+    start.draw(
+      this.ctx,
+      this.layout.startPos.x * spriteSize,
+      this.layout.startPos.y * spriteSize
+    );
+    exit.draw(
+      this.ctx,
+      this.layout.endPos.x * spriteSize,
+      this.layout.endPos.y * spriteSize
+    );
+    this.ctx.drawImage(
+      this.fogCanvas,
+      x,
+      y,
+      this.width,
+      this.height,
+      x,
+      y,
+      this.width,
+      this.height
     );
     this.player.draw(this.ctx);
   }
