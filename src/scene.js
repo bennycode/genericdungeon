@@ -14,7 +14,7 @@ export class Scene {
     this.layout = new Layout(roomCount);
     this.player = new Player(
       this.layout.startPos.x * spriteSize,
-      this.layout.startPos.y * spriteSize
+      (this.layout.startPos.y + 1) * spriteSize
     );
     this.bgCanvas = document.createElement("canvas");
     this.updateBgCanvas();
@@ -88,8 +88,8 @@ export class Scene {
   }
 
   draw() {
-    const x = this.player.x - this.halfWidth;
-    const y = this.player.y - this.halfHeight;
+    const x = this.player.x - this.halfWidth + 8;
+    const y = this.player.y - this.halfHeight + 8;
     this.ctx.setTransform(1, 0, 0, 1, -x, -y);
     this.ctx.drawImage(
       this.bgCanvas,

@@ -16,16 +16,16 @@ class Input {
   }
 
   get left() {
-    return this.isPressing(KEYS.LEFT);
+    return this.isPressing(KEYS.LEFT) || this.isPressing(KEYS.A);
   }
   get right() {
-    return this.isPressing(KEYS.RIGHT);
+    return this.isPressing(KEYS.RIGHT) || this.isPressing(KEYS.D);
   }
   get up() {
-    return this.isPressing(KEYS.UP);
+    return this.isPressing(KEYS.UP) || this.isPressing(KEYS.W);
   }
   get down() {
-    return this.isPressing(KEYS.DOWN);
+    return this.isPressing(KEYS.DOWN) || this.isPressing(KEYS.S);
   }
 
   isPressing(key) {
@@ -39,5 +39,9 @@ export const KEYS = {
   UP: 38,
   RIGHT: 39,
   DOWN: 40,
-  LEFT: 37
+  LEFT: 37,
+  W: 87,
+  A: 65,
+  S: 83,
+  D: 68
 };
