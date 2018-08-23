@@ -17,6 +17,7 @@ onload(run);
 
 function run() {
   const scene = new Scene(floorCtx, 30);
+  scene.fadeFrom();
   timer.on(() => {
     scene.update();
     scene.draw();

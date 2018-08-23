@@ -1,7 +1,9 @@
 import { Layout } from "./layout";
 import { Player } from "./player";
+import { Skeleton } from "./skeleton";
 import { floor, wall, start, exit, door, torch } from "./sprite";
-import { randFromArray } from "./util";
+import { rand, randFromArray } from "./util";
+import { timer } from "./timer";
 
 const spriteSize = 16;
 
@@ -27,11 +29,37 @@ export class Scene {
     fogCtx.fillRect(0, 0, this.fogCanvas.width, this.fogCanvas.height);
     this.unveilFog(this.layout.startPos.x, this.layout.startPos.y);
     this.torches = this.placeTorches();
+    this.skeletons = this.placeSkeletons(30);
   }
 
   update() {
     this.player.update(this.layout.map);
     this.checkOpenDoors();
+    this.skeletons.forEach(skeleton => skeleton.update());
+  }
+
+  fadeFrom(color = "#000", speed = 0.01) {
+    this.fadeColor = color;
+    this.fade = 1;
+    const fadeId = timer.on(() => {
+      this.fade -= speed;
+      if (this.fade < 0) {
+        this.fade = 0;
+        timer.off(fadeId);
+      }
+    });
+  }
+
+  fadeTo(color = "#000", speed = 0.01) {
+    this.fadeColor = color;
+    this.fade = speed;
+    const fadeId = timer.on(() => {
+      this.fade += speed;
+      if (this.fade > 1) {
+        this.fade = 1;
+        timer.off(fadeId);
+      }
+    });
   }
 
   placeTorches() {
@@ -53,6 +81,23 @@ export class Scene {
       );
     });
     return torches;
+  }
+
+  placeSkeletons(count) {
+    const skeletons = [];
+    while (skeletons.length < count) {
+      const { x, y, x2, y2 } = randFromArray(this.layout.rooms);
+      const skeletonX = rand(x+1, x2);
+      const skeletonY = rand(y+1, y2);
+      skeletons.push(
+        new Skeleton(
+          skeletonX * spriteSize,
+          skeletonY * spriteSize,
+          this.layout.map
+        )
+      );
+    }
+    return skeletons;
   }
 
   checkOpenDoors() {
@@ -138,6 +183,7 @@ export class Scene {
     this.torches.forEach(({ x, y }) =>
       torch.draw(this.ctx, x * spriteSize, y * spriteSize)
     );
+    this.skeletons.forEach(skeleton => skeleton.draw(this.ctx));
     this.ctx.drawImage(
       this.fogCanvas,
       x,
@@ -150,5 +196,11 @@ export class Scene {
       this.height
     );
     this.player.draw(this.ctx);
+    if (this.fade) {
+      this.ctx.fillStyle = this.fadeColor;
+      this.ctx.globalAlpha = this.fade;
+      this.ctx.fillRect(x, y, this.width, this.height);
+      this.ctx.globalAlpha = 1;
+    }
   }
 }

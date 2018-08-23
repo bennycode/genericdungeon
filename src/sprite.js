@@ -81,6 +81,29 @@ export const hero = new Sprite("characters", [
   }
 ]);
 
+export const skeleton = () => new Sprite("characters", [
+  { tile: [10, 0] },
+  { tile: [10, 1] },
+  { tile: [10, 2] },
+  { tile: [10, 3] },
+  {
+    speed: 6,
+    tile: [[9, 0], [10, 0], [11, 0], [10, 0]]
+  },
+  {
+    speed: 6,
+    tile: [[9, 1], [10, 1], [11, 1], [10, 1]]
+  },
+  {
+    speed: 6,
+    tile: [[9, 2], [10, 2], [11, 2], [10, 2]]
+  },
+  {
+    speed: 6,
+    tile: [[9, 3], [10, 3], [11, 3], [10, 3]]
+  }
+]);
+
 export const floor = new Sprite("tiles", [{ tile: [2, 1] }]);
 
 export const wall = new Sprite("tiles", [
@@ -95,7 +118,7 @@ export const start = new Sprite("tiles", [{ tile: [0, 7] }]);
 export const exit = new Sprite("tiles", [{ tile: [1, 7] }]);
 export const torch = new Sprite("things", [
   {
-    speed: 4,
+    speed: 6,
     tile: [[0, 4], [1, 4], [2, 4], [1, 4]]
   }
 ]);
