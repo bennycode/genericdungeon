@@ -28,14 +28,18 @@ export class Scene {
     fogCtx.fillStyle = "#000";
     fogCtx.fillRect(0, 0, this.fogCanvas.width, this.fogCanvas.height);
     this.unveilFog(this.layout.startPos.x, this.layout.startPos.y);
+    this.obstacleMap = this.updateObstacleMap(this.layout.doors);
     this.torches = this.placeTorches();
-    this.skeletons = this.placeSkeletons(30);
+    this.skeletons = this.placeSkeletons(this.layout.rooms.length);
   }
 
   update() {
     this.player.update(this.layout.map);
     this.checkOpenDoors();
-    this.skeletons.forEach(skeleton => skeleton.update());
+    const { x, y } = this.player;
+    this.skeletons.forEach(skeleton =>
+      skeleton.update(Math.round(x), Math.round(y), this.obstacleMap)
+    );
   }
 
   fadeFrom(color = "#000", speed = 0.01) {
@@ -89,7 +93,7 @@ export class Scene {
       const { x, y, x2, y2 } = randFromArray(this.layout.rooms);
       const skeletonX = rand(x + 1, x2);
       const skeletonY = rand(y + 1, y2);
-      skeletons.push(new Skeleton(skeletonX, skeletonY, this.layout.map));
+      skeletons.push(new Skeleton(skeletonX, skeletonY, this.obstacleMap));
     }
     return skeletons;
   }
@@ -105,8 +109,18 @@ export class Scene {
         this.unveilFog(doorX + 1, doorY);
         this.unveilFog(doorX, doorY - 1);
         this.unveilFog(doorX, doorY + 1);
+        this.obstacleMap = this.updateObstacleMap(this.layout.doors);
       }
     }
+  }
+
+  updateObstacleMap(obstacles) {
+    const isObstacle = (mapX, mapY) =>
+      obstacles.some(({ x, y }) => x === mapX && y === mapY);
+    const obstacleMap = this.layout.map.map((col, x) =>
+      col.map((isFloor, y) => isFloor && !isObstacle(x, y))
+    );
+    return obstacleMap;
   }
 
   unveilFog(x, y) {
