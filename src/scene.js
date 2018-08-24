@@ -16,8 +16,8 @@ export class Scene {
     this.halfHeight = Math.floor(this.height / 2);
     this.layout = new Layout(roomCount);
     this.player = new Player(
-      this.layout.startPos.x * spriteSize,
-      (this.layout.startPos.y + 1) * spriteSize
+      this.layout.startPos.x,
+      this.layout.startPos.y + 1
     );
     this.bgCanvas = document.createElement("canvas");
     this.updateBgCanvas();
@@ -87,15 +87,9 @@ export class Scene {
     const skeletons = [];
     while (skeletons.length < count) {
       const { x, y, x2, y2 } = randFromArray(this.layout.rooms);
-      const skeletonX = rand(x+1, x2);
-      const skeletonY = rand(y+1, y2);
-      skeletons.push(
-        new Skeleton(
-          skeletonX * spriteSize,
-          skeletonY * spriteSize,
-          this.layout.map
-        )
-      );
+      const skeletonX = rand(x + 1, x2);
+      const skeletonY = rand(y + 1, y2);
+      skeletons.push(new Skeleton(skeletonX, skeletonY, this.layout.map));
     }
     return skeletons;
   }
@@ -105,9 +99,7 @@ export class Scene {
     const doors = this.layout.doors;
     for (let i = doors.length - 1; i >= 0; i--) {
       const { x: doorX, y: doorY } = doors[i];
-      const [doorX1, doorY1] = [doorX * spriteSize, doorY * spriteSize];
-      const [doorX2, doorY2] = [doorX1 + spriteSize, doorY1 + spriteSize];
-      if (x2 > doorX1 && x1 < doorX2 && y2 > doorY1 && y1 < doorY2) {
+      if (x2 > doorX && x1 < doorX + 1 && y2 > doorY && y1 < doorY + 1) {
         this.layout.doors.splice(i, 1);
         this.unveilFog(doorX - 1, doorY);
         this.unveilFog(doorX + 1, doorY);
@@ -153,8 +145,8 @@ export class Scene {
   }
 
   draw() {
-    const x = this.player.x - this.halfWidth + 8;
-    const y = this.player.y - this.halfHeight + 8;
+    const x = this.player.screenX - this.halfWidth + 8;
+    const y = this.player.screenY - this.halfHeight + 8;
     this.ctx.setTransform(1, 0, 0, 1, -x, -y);
     this.ctx.drawImage(
       this.bgCanvas,

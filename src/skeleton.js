@@ -7,9 +7,8 @@ export class Skeleton extends Entity {
   constructor(x, y, floorMap) {
     super(x, y, skeleton(), true);
     this.floorMap = floorMap;
-    this.isMoving = false;
-    this.paddingTop = 7;
-    this.paddingBottom = 1;
+    this.paddingTop = 7 / 16;
+    this.paddingBottom = 1 / 16;
     this.baseVariant = 0;
     this.targetX = 0;
     this.targetY = 0;
@@ -20,11 +19,11 @@ export class Skeleton extends Entity {
     let newX = 0;
     let newY = 0;
     do {
-      newX = (this.x >> 4) + rand(-4, 4);
-      newY = (this.y >> 4) + rand(-4, 4);
+      newX = Math.round(this.x) + rand(-4, 4);
+      newY = Math.round(this.y) + rand(-4, 4);
     } while (!this.floorMap[newX] || !this.floorMap[newX][newY]);
-    this.targetX = newX << 4;
-    this.targetY = newY << 4;
+    this.targetX = newX;
+    this.targetY = newY;
     timer.off(this.targetId);
     this.targetId = timer.on(this.findNewTarget.bind(this), rand(30, 60));
   }
@@ -32,31 +31,34 @@ export class Skeleton extends Entity {
   update() {
     let x = 0;
     let y = 0;
+    const roundedX = Math.round(this.x * 16) >> 4;
+    const roundedY = Math.round(this.y * 16) >> 4;
 
-    if (this.x > this.targetX) {
+    if (roundedX > this.targetX) {
       this.baseVariant = 1;
       x = -1;
     }
-    if (this.x < this.targetX) {
+    if (roundedX < this.targetX) {
       this.baseVariant = 2;
       x = 1;
     }
-    if (this.y > this.targetY) {
+    if (roundedY > this.targetY) {
       this.baseVariant = 3;
       y = -1;
     }
-    if (this.y < this.targetY) {
+    if (roundedY < this.targetY) {
       this.baseVariant = 0;
       y = 1;
     }
 
-    this.move(x, y, this.floorMap);
-
     const isMoving = x || y;
-    this.variant = isMoving ? this.baseVariant + 4 : this.baseVariant;
     
-    if (!x && !y) {
+    if (isMoving) {
+      this.move(x, y, this.floorMap);
+    } else {
       this.findNewTarget();
     }
+
+    this.variant = isMoving ? this.baseVariant + 4 : this.baseVariant;
   }
 }

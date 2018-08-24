@@ -1,5 +1,5 @@
 export class Entity {
-  constructor(x, y, sprite, isSolid, speed = 1) {
+  constructor(x, y, sprite, isSolid, speed = 1 / 16) {
     this.x = x;
     this.y = y;
     this.sprite = sprite;
@@ -7,44 +7,55 @@ export class Entity {
     this.speed = speed;
     this.width = 16;
     this.height = 16;
-    this.paddingTop = 4;
-    this.paddingLeft = 4;
-    this.paddingBottom = 4;
-    this.paddingRight = 4;
+    this.paddingTop = 1 / 4;
+    this.paddingLeft = 1 / 4;
+    this.paddingBottom = 1 / 4;
+    this.paddingRight = 1 / 4;
     this.variant = 0;
+  }
+
+  get screenX() {
+    return ~~(this.x * 16);
+  }
+
+  get screenY() {
+    return ~~(this.y * 16);
   }
 
   get collisionBox() {
     return {
       x1: this.x + this.paddingLeft,
-      x2: this.x + this.width - this.paddingRight,
+      x2: this.x + 1 - this.paddingRight,
       y1: this.y + this.paddingTop,
-      y2: this.y + this.height - this.paddingBottom
+      y2: this.y + 1 - this.paddingBottom
     };
   }
 
   move(x, y, floorMap) {
+    const c = Math.sqrt(x * x + y * y);
+    const unitX = x / c;
+    const unitY = y / c;
+
     if (!floorMap) {
-      this.x += x * this.speed;
-      this.y += y * this.speed;
+      this.x += unitX * this.speed;
+      this.y += unitY * this.speed;
       return;
     }
-    const lowX = (val = this.x) => ~~((val + this.paddingLeft) / this.width);
-    const highX = (val = this.x) =>
-      ~~((val + this.width - this.paddingRight) / this.width);
-    const lowY = (val = this.y) => ~~((val + this.paddingTop) / this.height);
-    const highY = (val = this.y) =>
-      ~~((val + this.height - this.paddingBottom) / this.height);
-    if (x) {
-      const newX = this.x + x * this.speed;
-      const tileX = x < 1 ? lowX(newX) : highX(newX);
+    const lowX = (val = this.x) => ~~(val + this.paddingLeft);
+    const highX = (val = this.x) => ~~(val + 1 - this.paddingRight);
+    const lowY = (val = this.y) => ~~(val + this.paddingTop);
+    const highY = (val = this.y) => ~~(val + 1 - this.paddingBottom);
+
+    if (unitX) {
+      const newX = this.x + unitX * this.speed;
+      const tileX = unitX < 0 ? lowX(newX) : highX(newX);
       if (floorMap[tileX][lowY()] && floorMap[tileX][highY()]) {
         this.x = newX;
       }
     }
-    if (y) {
-      const newY = this.y + y * this.speed;
-      const tileY = y < 1 ? lowY(newY) : highY(newY);
+    if (unitY) {
+      const newY = this.y + unitY * this.speed;
+      const tileY = unitY < 0 ? lowY(newY) : highY(newY);
       if (floorMap[lowX()][tileY] && floorMap[highX()][tileY]) {
         this.y = newY;
       }
@@ -53,6 +64,6 @@ export class Entity {
 
   draw(ctx) {
     this.sprite.setVariant(this.variant);
-    this.sprite.draw(ctx, ~~this.x, ~~this.y);
+    this.sprite.draw(ctx, this.screenX, this.screenY);
   }
 }

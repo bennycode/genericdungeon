@@ -5,9 +5,8 @@ import { Entity } from "./entity";
 export class Player extends Entity {
   constructor(x, y) {
     super(x, y, hero, true);
-    this.isMoving = false;
-    this.paddingTop = 7;
-    this.paddingBottom = 1;
+    this.paddingTop = 7 / 16;
+    this.paddingBottom = 1 / 16;
     this.baseVariant = 0;
   }
 
@@ -32,9 +31,9 @@ export class Player extends Entity {
       y = 1;
     }
 
-    this.move(x, y, floorMap);
-
     const isMoving = x || y;
+    if (isMoving) this.move(x, y, floorMap);
+
     this.variant = isMoving ? this.baseVariant + 4 : this.baseVariant;
   }
 }
