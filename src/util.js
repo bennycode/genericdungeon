@@ -45,6 +45,9 @@ const aStar = (start, goal, map) => {
  // const frontier = new PriorityQueue();
 };
 /*
+
+from https://www.redblobgames.com/pathfinding/a-star/introduction.html#astar
+
 frontier = PriorityQueue()
 frontier.put(start, 0)
 came_from = {}
