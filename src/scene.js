@@ -38,7 +38,7 @@ export class Scene {
     this.checkOpenDoors();
     const { x, y } = this.player;
     this.skeletons.forEach(skeleton =>
-      skeleton.update(Math.round(x), Math.round(y), this.obstacleMap)
+      skeleton.update(Math.floor(x), Math.floor(y), this.obstacleMap)
     );
   }
 

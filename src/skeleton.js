@@ -24,7 +24,7 @@ export class Skeleton extends Entity {
     this.targetX = newX;
     this.targetY = newY;
     timer.off(this.targetId);
-    this.targetId = timer.on(this.findNewTarget.bind(this), rand(30, 60));
+    this.targetId = timer.on(this.findNewTarget.bind(this, obstacleMap), rand(30, 60));
   }
 
   update(playerX, playerY, obstacleMap) {

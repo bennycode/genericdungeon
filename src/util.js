@@ -42,7 +42,7 @@ p.put("200", 200);
 console.log(p.queue);
 
 const aStar = (start, goal, map) => {
-  const frontier = new PriorityQueue();
+ // const frontier = new PriorityQueue();
 };
 /*
 frontier = PriorityQueue()
