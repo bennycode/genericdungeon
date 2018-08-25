@@ -15,9 +15,9 @@ export class Layout {
     this.setValidNeighbors();
 
     this.startRoom = this.getMostCenterRoom();
-    this.endRoom = this.rooms[this.rooms.length - 1];
-
+    
     this.rooms = this.getConnectedRooms(this.startRoom);
+    this.endRoom = this.rooms[this.rooms.length - 1];
     this.normalizeCoords();
     this.map = this.makeMap();
     this.doors = this.makeDoors();
