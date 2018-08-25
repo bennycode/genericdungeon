@@ -64,6 +64,6 @@ export class Entity {
 
   draw(ctx) {
     this.sprite.setVariant(this.variant);
-    this.sprite.draw(ctx, this.screenX, this.screenY);
+    this.sprite.draw(ctx, this.x, this.y);
   }
 }

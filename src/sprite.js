@@ -54,7 +54,17 @@ export class Sprite {
   draw(ctx, x, y) {
     const sheet = sheets[this.sheet];
     const [px, py] = this.frame;
-    ctx.drawImage(sheet, px * size, py * size, size, size, x, y, size, size);
+    ctx.drawImage(
+      sheet,
+      px * size,
+      py * size,
+      size,
+      size,
+      ~~(x * size),
+      ~~(y * size),
+      size,
+      size
+    );
   }
 }
 
@@ -81,28 +91,29 @@ export const hero = new Sprite("characters", [
   }
 ]);
 
-export const skeleton = () => new Sprite("characters", [
-  { tile: [10, 0] },
-  { tile: [10, 1] },
-  { tile: [10, 2] },
-  { tile: [10, 3] },
-  {
-    speed: 6,
-    tile: [[9, 0], [10, 0], [11, 0], [10, 0]]
-  },
-  {
-    speed: 6,
-    tile: [[9, 1], [10, 1], [11, 1], [10, 1]]
-  },
-  {
-    speed: 6,
-    tile: [[9, 2], [10, 2], [11, 2], [10, 2]]
-  },
-  {
-    speed: 6,
-    tile: [[9, 3], [10, 3], [11, 3], [10, 3]]
-  }
-]);
+export const skeleton = () =>
+  new Sprite("characters", [
+    { tile: [10, 0] },
+    { tile: [10, 1] },
+    { tile: [10, 2] },
+    { tile: [10, 3] },
+    {
+      speed: 6,
+      tile: [[9, 0], [10, 0], [11, 0], [10, 0]]
+    },
+    {
+      speed: 6,
+      tile: [[9, 1], [10, 1], [11, 1], [10, 1]]
+    },
+    {
+      speed: 6,
+      tile: [[9, 2], [10, 2], [11, 2], [10, 2]]
+    },
+    {
+      speed: 6,
+      tile: [[9, 3], [10, 3], [11, 3], [10, 3]]
+    }
+  ]);
 
 export const floor = new Sprite("tiles", [{ tile: [2, 1] }]);
 
@@ -120,5 +131,12 @@ export const torch = new Sprite("things", [
   {
     speed: 6,
     tile: [[0, 4], [1, 4], [2, 4], [1, 4]]
+  }
+]);
+
+export const electric = new Sprite("tiles", [
+  {
+    speed: 6,
+    tile: [[5, 3], [5, 4]]
   }
 ]);

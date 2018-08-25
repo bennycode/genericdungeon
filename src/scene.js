@@ -1,7 +1,7 @@
 import { Layout } from "./layout";
 import { Player } from "./player";
 import { Skeleton } from "./skeleton";
-import { floor, wall, start, exit, door, torch } from "./sprite";
+import { floor, wall, start, exit, door, torch, electric } from "./sprite";
 import { rand, randFromArray } from "./util";
 import { timer } from "./timer";
 
@@ -35,11 +35,11 @@ export class Scene {
 
   update() {
     this.player.update(this.layout.map);
+    const x = Math.round(this.player.x);
+    const y = Math.round(this.player.y);
     this.checkOpenDoors();
-    const { x, y } = this.player;
-    this.skeletons.forEach(skeleton =>
-      skeleton.update(Math.floor(x), Math.floor(y), this.obstacleMap)
-    );
+    this.skeletons.forEach(skeleton => skeleton.update(x, y, this.obstacleMap));
+    this.layout.makeGoalPath({ x, y });
   }
 
   fadeFrom(color = "#000", speed = 0.01) {
@@ -144,12 +144,12 @@ export class Scene {
     map.forEach((col, x) =>
       col.forEach((isFloor, y) => {
         if (isFloor) {
-          floor.draw(ctx, x * spriteSize, y * spriteSize);
+          floor.draw(ctx, x, y);
           [[x, y - 1], [x + 1, y], [x, y + 1], [x - 1, y]].forEach(
             ([xx, yy], variant) => {
               if (!map[xx][yy]) {
                 wall.setVariant(variant);
-                wall.draw(ctx, x * spriteSize, y * spriteSize);
+                wall.draw(ctx, x, y);
               }
             }
           );
@@ -173,22 +173,11 @@ export class Scene {
       this.width,
       this.height
     );
-    this.layout.doors.forEach(({ x, y }) =>
-      door.draw(this.ctx, x * spriteSize, y * spriteSize)
-    );
-    start.draw(
-      this.ctx,
-      this.layout.startPos.x * spriteSize,
-      this.layout.startPos.y * spriteSize
-    );
-    exit.draw(
-      this.ctx,
-      this.layout.endPos.x * spriteSize,
-      this.layout.endPos.y * spriteSize
-    );
-    this.torches.forEach(({ x, y }) =>
-      torch.draw(this.ctx, x * spriteSize, y * spriteSize)
-    );
+    this.layout.doors.forEach(({ x, y }) => door.draw(this.ctx, x, y));
+    start.draw(this.ctx, this.layout.startPos.x, this.layout.startPos.y);
+    exit.draw(this.ctx, this.layout.endPos.x, this.layout.endPos.y);
+    this.torches.forEach(({ x, y }) => torch.draw(this.ctx, x, y));
+    this.layout.goalPath.forEach(({ x, y }) =>electric.draw(this.ctx, x, y));
     this.skeletons.forEach(skeleton => skeleton.draw(this.ctx));
     this.ctx.drawImage(
       this.fogCanvas,

@@ -1,8 +1,7 @@
 import { rand, randFromArray } from "./util";
 import { Room } from "./room";
-import { Tile } from "./tile";
 import { Rect } from "./rect";
-import { floor, wall } from "./sprite";
+import aStar from "./astar";
 
 export class Layout {
   constructor(roomCount) {
@@ -15,7 +14,7 @@ export class Layout {
     this.setValidNeighbors();
 
     this.startRoom = this.getMostCenterRoom();
-    
+
     this.rooms = this.getConnectedRooms(this.startRoom);
     this.endRoom = this.rooms[this.rooms.length - 1];
     this.normalizeCoords();
@@ -23,6 +22,11 @@ export class Layout {
     this.doors = this.makeDoors();
     this.startPos = this.startRoom.getCenter(true);
     this.endPos = this.endRoom.getCenter(true);
+    this.goalPath = aStar(this.startPos, this.endPos, this.map);
+  }
+
+  makeGoalPath(from) {
+    this.goalPath = aStar(from, this.endPos, this.map);
   }
 
   makeRooms(count) {
