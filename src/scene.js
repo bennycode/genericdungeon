@@ -177,7 +177,7 @@ export class Scene {
     start.draw(this.ctx, this.layout.startPos.x, this.layout.startPos.y);
     exit.draw(this.ctx, this.layout.endPos.x, this.layout.endPos.y);
     this.torches.forEach(({ x, y }) => torch.draw(this.ctx, x, y));
-    this.layout.goalPath.forEach(({ x, y }) =>electric.draw(this.ctx, x, y));
+    this.layout.goalPath.forEach(({ x, y }) => electric.draw(this.ctx, x, y));
     this.skeletons.forEach(skeleton => skeleton.draw(this.ctx));
     this.ctx.drawImage(
       this.fogCanvas,

@@ -8,17 +8,18 @@ class PriorityQueue {
   }
 
   put(item, priority) {
-    if (!this.queue.length) {
-      this.queue.push({ item, priority });
-      return;
-    }
-    let i = 0;
-    for (; i < this.queue.length; i++) {
-      if (this.queue[i].priority > priority) {
-        break;
+    let pivot = 0;
+    let low = 0;
+    let high = this.queue.length;
+    while (low < high) {
+      pivot = (low + high) / 2;
+      if (priority > this.queue[~~pivot].priority) {
+        low = ~~(pivot + 0.5);
+      } else {
+        high = ~~pivot;
       }
     }
-    this.queue.splice(i, 0, { item, priority });
+    this.queue.splice(pivot, 0, { item, priority });
   }
 
   get() {
