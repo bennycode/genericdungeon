@@ -1,11 +1,11 @@
-import { skeleton } from './sprite';
+import { slime } from './sprite';
 import { Entity } from './entity';
 import { timer } from './timer';
 import { rand } from './util';
 
-export class Skeleton extends Entity {
+export class Slime extends Entity {
   constructor(x, y, obstacleMap) {
-    super(x, y, skeleton(), true, 1 / rand(24, 32));
+    super(x, y, slime(), true, 1 / rand(32, 48));
     this.paddingTop = 7 / 16;
     this.paddingBottom = 1 / 16;
     this.baseVariant = 0;

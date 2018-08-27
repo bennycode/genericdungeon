@@ -1,7 +1,7 @@
-import { rand, randFromArray } from "./util";
-import { Room } from "./room";
-import { Rect } from "./rect";
-import aStar from "./astar";
+import { rand, randFromArray } from './util';
+import { Room } from './room';
+import { Rect } from './rect';
+import aStar from './astar';
 
 export class Layout {
   constructor(roomCount) {
@@ -9,6 +9,39 @@ export class Layout {
     this.roomShouldMove = this.roomShouldMove.bind(this);
 
     this.rooms = this.makeRooms(roomCount);
+    /** debug rooms
+    this.rooms = [
+      [18, 25, 7, 5],
+      [21, 17, 5, 8],
+      [12, 20, 6, 7],
+      [25, 25, 6, 8],
+      [21, 30, 4, 5],
+      [26, 17, 6, 8],
+      [22, 12, 8, 5],
+      [10, 15, 4, 5],
+      [6, 21, 6, 5],
+      [31, 26, 4, 4],
+      [25, 33, 6, 7],
+      [20, 35, 4, 8],
+      [14, 9, 8, 7],
+      [22, 6, 6, 6],
+      [30, 12, 4, 4],
+      [0, 21, 6, 6],
+      [35, 24, 8, 7],
+      [24, 40, 4, 8],
+      [28, 40, 7, 6],
+      [22, 0, 6, 6],
+      [34, 14, 7, 4],
+      [35, 31, 8, 8],
+      [41, 19, 8, 5],
+      [43, 24, 5, 5],
+      [34, 19, 7, 5],
+      [25, 48, 7, 8],
+      [41, 15, 5, 4],
+      [20, 48, 5, 8],
+    ].map(([x, y, w, h]) => new Room(x, y, w, h));
+
+    /**/
     this.fixLayout();
 
     this.setValidNeighbors();
@@ -16,13 +49,18 @@ export class Layout {
     this.startRoom = this.getMostCenterRoom();
 
     this.rooms = this.getConnectedRooms(this.startRoom);
-    this.endRoom = this.rooms[this.rooms.length - 1];
     this.normalizeCoords();
+    console.log(
+      this.rooms
+        .map(room => `[${room.x},${room.y},${room.w},${room.h}]`)
+        .join(','),
+    );
+    this.endRoom = this.rooms[this.rooms.length - 1];
     this.map = this.makeMap();
     this.doors = this.makeDoors();
     this.startPos = this.startRoom.getCenter(true);
     this.endPos = this.endRoom.getCenter(true);
-    this.goalPath = aStar(this.startPos, this.endPos, this.map);
+    this.makeGoalPath(this.startPos);
   }
 
   makeGoalPath(from) {
@@ -46,7 +84,8 @@ export class Layout {
         addConnected(room);
         room.neighbors.forEach(
           neighbor =>
-            !connectedRooms.includes(neighbor) && newRoomsToCheck.push(neighbor)
+            !connectedRooms.includes(neighbor) &&
+            newRoomsToCheck.push(neighbor),
         );
       });
       roomsToCheck = newRoomsToCheck;
@@ -59,7 +98,7 @@ export class Layout {
     while (unvisited.length) {
       const room = unvisited.reduce(
         (shortest, curr) => (curr.dist < shortest.dist ? curr : shortest),
-        unvisited[0]
+        unvisited[0],
       );
       unvisited.splice(unvisited.indexOf(room), 1);
       room.neighbors.forEach(neighbor => {
@@ -73,7 +112,7 @@ export class Layout {
 
   getRoomAtPosition(x, y) {
     return this.rooms.find(
-      room => x > room.x && x < room.x2 && y > room.y && y < room.y2
+      room => x > room.x && x < room.x2 && y > room.y && y < room.y2,
     );
   }
 
@@ -92,7 +131,7 @@ export class Layout {
         const dist = room.getCenterDist(allBounds);
         return dist < closest.dist ? { room, dist } : closest;
       },
-      { room: this.rooms[0], dist: Infinity }
+      { room: this.rooms[0], dist: Infinity },
     ).room;
   }
 
@@ -106,7 +145,7 @@ export class Layout {
 
   setValidNeighbors() {
     this.rooms.forEach(room =>
-      room.findAndSetNeighbors(this.getOtherRooms(room))
+      room.findAndSetNeighbors(this.getOtherRooms(room)),
     );
   }
 
@@ -122,7 +161,7 @@ export class Layout {
     const randomRoom = randFromArray(movableRooms);
 
     const otherRooms = movableRooms.filter(
-      room => room !== randomRoom && randomRoom.isOverlapping(room)
+      room => room !== randomRoom && randomRoom.isOverlapping(room),
     );
     const otherRoom = randFromArray(otherRooms);
 
@@ -157,7 +196,7 @@ export class Layout {
           doors.push({ x, y });
         }
         this.map[x][y] = true;
-      })
+      }),
     );
     return doors;
   }
@@ -181,7 +220,7 @@ export class Layout {
     const allRoomBounds = Rect.fromRects(this.rooms);
     return {
       width: (allRoomBounds.w + 1) * this.tileSize,
-      height: (allRoomBounds.h + 1) * this.tileSize
+      height: (allRoomBounds.h + 1) * this.tileSize,
     };
   }
 }

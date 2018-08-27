@@ -6,12 +6,12 @@ class Input {
   constructor() {
     this.keys = [];
     document.addEventListener(
-      "keydown",
-      ({ keyCode }) => (this.keys[keyCode] = true)
+      'keydown',
+      ({ keyCode }) => (this.keys[keyCode] = true),
     );
     document.addEventListener(
-      "keyup",
-      ({ keyCode }) => (this.keys[keyCode] = false)
+      'keyup',
+      ({ keyCode }) => (this.keys[keyCode] = false),
     );
   }
 
@@ -43,5 +43,5 @@ export const KEYS = {
   W: 87,
   A: 65,
   S: 83,
-  D: 68
+  D: 68,
 };

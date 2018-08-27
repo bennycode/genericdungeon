@@ -1,12 +1,12 @@
-import { characters, things, tileset } from "./images";
-import { timer } from "./timer";
+import { characters, things, tileset } from './images';
+import { timer } from './timer';
 
 const loadImage = src => Object.assign(new Image(), { src });
 
 const sheets = {
   characters: loadImage(characters),
   things: loadImage(things),
-  tiles: loadImage(tileset)
+  tiles: loadImage(tileset),
 };
 
 export const onload = callback => {
@@ -31,7 +31,7 @@ export class Sprite {
   constructor(sheet, variants) {
     this.sheet = sheet;
     this.variants = variants;
-    this.timerId = "";
+    this.timerId = '';
     this.setVariant(0);
   }
   setVariant(num) {
@@ -63,80 +63,104 @@ export class Sprite {
       ~~(x * size),
       ~~(y * size),
       size,
-      size
+      size,
     );
   }
 }
 
-export const hero = new Sprite("characters", [
+export const hero = new Sprite('characters', [
+  { tile: [7, 3] },
+  { tile: [7, 2] },
   { tile: [7, 0] },
   { tile: [7, 1] },
-  { tile: [7, 2] },
-  { tile: [7, 3] },
   {
     speed: 6,
-    tile: [[6, 0], [7, 0], [8, 0], [7, 0]]
+    tile: [[6, 3], [7, 3], [8, 3], [7, 3]],
   },
   {
     speed: 6,
-    tile: [[6, 1], [7, 1], [8, 1], [7, 1]]
+    tile: [[6, 2], [7, 2], [8, 2], [7, 2]],
   },
   {
     speed: 6,
-    tile: [[6, 2], [7, 2], [8, 2], [7, 2]]
+    tile: [[6, 0], [7, 0], [8, 0], [7, 0]],
   },
   {
     speed: 6,
-    tile: [[6, 3], [7, 3], [8, 3], [7, 3]]
-  }
+    tile: [[6, 1], [7, 1], [8, 1], [7, 1]],
+  },
 ]);
 
 export const skeleton = () =>
-  new Sprite("characters", [
+  new Sprite('characters', [
     { tile: [10, 0] },
     { tile: [10, 1] },
     { tile: [10, 2] },
     { tile: [10, 3] },
     {
       speed: 6,
-      tile: [[9, 0], [10, 0], [11, 0], [10, 0]]
+      tile: [[9, 0], [10, 0], [11, 0], [10, 0]],
     },
     {
       speed: 6,
-      tile: [[9, 1], [10, 1], [11, 1], [10, 1]]
+      tile: [[9, 1], [10, 1], [11, 1], [10, 1]],
     },
     {
       speed: 6,
-      tile: [[9, 2], [10, 2], [11, 2], [10, 2]]
+      tile: [[9, 2], [10, 2], [11, 2], [10, 2]],
     },
     {
       speed: 6,
-      tile: [[9, 3], [10, 3], [11, 3], [10, 3]]
-    }
+      tile: [[9, 3], [10, 3], [11, 3], [10, 3]],
+    },
   ]);
 
-export const floor = new Sprite("tiles", [{ tile: [2, 1] }]);
+export const slime = () =>
+  new Sprite('characters', [
+    { tile: [1, 4] },
+    { tile: [1, 5] },
+    { tile: [1, 6] },
+    { tile: [1, 7] },
+    {
+      speed: 6,
+      tile: [[0, 4], [1, 4], [2, 4], [1, 4]],
+    },
+    {
+      speed: 6,
+      tile: [[0, 5], [1, 5], [2, 5], [1, 5]],
+    },
+    {
+      speed: 6,
+      tile: [[0, 6], [1, 6], [2, 6], [1, 6]],
+    },
+    {
+      speed: 6,
+      tile: [[0, 7], [1, 7], [2, 7], [1, 7]],
+    },
+  ]);
 
-export const wall = new Sprite("tiles", [
+export const floor = new Sprite('tiles', [{ tile: [2, 1] }]);
+
+export const wall = new Sprite('tiles', [
   { tile: [1, 3] },
   { tile: [2, 4] },
   { tile: [1, 5] },
-  { tile: [0, 4] }
+  { tile: [0, 4] },
 ]);
 
-export const door = new Sprite("tiles", [{ tile: [0, 6] }]);
-export const start = new Sprite("tiles", [{ tile: [0, 7] }]);
-export const exit = new Sprite("tiles", [{ tile: [1, 7] }]);
-export const torch = new Sprite("things", [
+export const door = new Sprite('tiles', [{ tile: [0, 6] }]);
+export const start = new Sprite('tiles', [{ tile: [0, 7] }]);
+export const exit = new Sprite('tiles', [{ tile: [1, 7] }]);
+export const torch = new Sprite('things', [
   {
     speed: 6,
-    tile: [[0, 4], [1, 4], [2, 4], [1, 4]]
-  }
+    tile: [[0, 4], [1, 4], [2, 4], [1, 4]],
+  },
 ]);
 
-export const electric = new Sprite("tiles", [
+export const electric = new Sprite('tiles', [
   {
     speed: 6,
-    tile: [[5, 3], [5, 4]]
-  }
+    tile: [[5, 3], [5, 4]],
+  },
 ]);

@@ -1,13 +1,13 @@
-import { Scene } from "./scene";
-import { timer } from "./timer";
-import { onload } from "./sprite";
+import { Scene } from './scene';
+import { timer } from './timer';
+import { onload } from './sprite';
 
 const vw = 640;
 const vh = 480;
 const scale = 4;
 
-const floor = document.getElementById("floor");
-const floorCtx = floor.getContext("2d");
+const floor = document.getElementById('floor');
+const floorCtx = floor.getContext('2d');
 floor.width = vw / scale;
 floor.height = vh / scale;
 floor.style.width = vw;

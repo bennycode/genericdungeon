@@ -1,9 +1,9 @@
-import { Layout } from "./layout";
-import { Player } from "./player";
-import { Skeleton } from "./skeleton";
-import { floor, wall, start, exit, door, torch, electric } from "./sprite";
-import { rand, randFromArray } from "./util";
-import { timer } from "./timer";
+import { Layout } from './layout';
+import { Player } from './player';
+import { Slime } from './slime';
+import { floor, wall, start, exit, door, torch, electric } from './sprite';
+import { rand, randFromArray } from './util';
+import { timer } from './timer';
 
 const spriteSize = 16;
 
@@ -17,20 +17,20 @@ export class Scene {
     this.layout = new Layout(roomCount);
     this.player = new Player(
       this.layout.startPos.x,
-      this.layout.startPos.y + 1
+      this.layout.startPos.y + 1,
     );
-    this.bgCanvas = document.createElement("canvas");
+    this.bgCanvas = document.createElement('canvas');
     this.updateBgCanvas();
-    this.fogCanvas = document.createElement("canvas");
+    this.fogCanvas = document.createElement('canvas');
     this.fogCanvas.width = this.bgCanvas.width;
     this.fogCanvas.height = this.bgCanvas.height;
-    const fogCtx = this.fogCanvas.getContext("2d");
-    fogCtx.fillStyle = "#000";
+    const fogCtx = this.fogCanvas.getContext('2d');
+    fogCtx.fillStyle = '#000';
     fogCtx.fillRect(0, 0, this.fogCanvas.width, this.fogCanvas.height);
     this.unveilFog(this.layout.startPos.x, this.layout.startPos.y);
     this.obstacleMap = this.updateObstacleMap(this.layout.doors);
     this.torches = this.placeTorches();
-    this.skeletons = this.placeSkeletons(this.layout.rooms.length);
+    this.enemies = this.placeEnemies(Slime, this.layout.rooms.length);
   }
 
   update() {
@@ -38,11 +38,11 @@ export class Scene {
     const x = Math.round(this.player.x);
     const y = Math.round(this.player.y);
     this.checkOpenDoors();
-    this.skeletons.forEach(skeleton => skeleton.update(x, y, this.obstacleMap));
+    this.enemies.forEach(enemy => enemy.update(x, y, this.obstacleMap));
     this.layout.makeGoalPath({ x, y });
   }
 
-  fadeFrom(color = "#000", speed = 0.01) {
+  fadeFrom(color = '#000', speed = 0.01) {
     this.fadeColor = color;
     this.fade = 1;
     const fadeId = timer.on(() => {
@@ -54,7 +54,7 @@ export class Scene {
     });
   }
 
-  fadeTo(color = "#000", speed = 0.01) {
+  fadeTo(color = '#000', speed = 0.01) {
     this.fadeColor = color;
     this.fade = speed;
     const fadeId = timer.on(() => {
@@ -72,7 +72,7 @@ export class Scene {
     const torchRooms = [this.layout.startRoom, this.layout.endRoom];
     while (torchRooms.length < max) {
       const rooms = this.layout.rooms.filter(
-        room => !torchRooms.includes(room)
+        room => !torchRooms.includes(room),
       );
       torchRooms.push(randFromArray(rooms));
     }
@@ -81,21 +81,21 @@ export class Scene {
         { x: x + 1, y: y + 1 },
         { x: x + 1, y: y2 - 1 },
         { x: x2 - 1, y: y + 1 },
-        { x: x2 - 1, y: y2 - 1 }
+        { x: x2 - 1, y: y2 - 1 },
       );
     });
     return torches;
   }
 
-  placeSkeletons(count) {
-    const skeletons = [];
-    while (skeletons.length < count) {
+  placeEnemies(enemy, count) {
+    const enemies = [];
+    while (enemies.length < count) {
       const { x, y, x2, y2 } = randFromArray(this.layout.rooms);
-      const skeletonX = rand(x + 1, x2);
-      const skeletonY = rand(y + 1, y2);
-      skeletons.push(new Skeleton(skeletonX, skeletonY, this.obstacleMap));
+      const enemyX = rand(x + 1, x2);
+      const enemyY = rand(y + 1, y2);
+      enemies.push(new enemy(enemyX, enemyY, this.obstacleMap));
     }
-    return skeletons;
+    return enemies;
   }
 
   checkOpenDoors() {
@@ -118,7 +118,7 @@ export class Scene {
     const isObstacle = (mapX, mapY) =>
       obstacles.some(({ x, y }) => x === mapX && y === mapY);
     const obstacleMap = this.layout.map.map((col, x) =>
-      col.map((isFloor, y) => isFloor && !isObstacle(x, y))
+      col.map((isFloor, y) => isFloor && !isObstacle(x, y)),
     );
     return obstacleMap;
   }
@@ -126,7 +126,7 @@ export class Scene {
   unveilFog(x, y) {
     const room = this.layout.getRoomAtPosition(x, y);
     if (room) {
-      const fogCtx = this.fogCanvas.getContext("2d");
+      const fogCtx = this.fogCanvas.getContext('2d');
       const [x, y] = [room.x * spriteSize, room.y * spriteSize];
       const [w, h] = [(room.w + 1) * spriteSize, (room.h + 1) * spriteSize];
       fogCtx.clearRect(x, y, w, h);
@@ -137,8 +137,8 @@ export class Scene {
     const { width, height } = this.layout.mapSize;
     this.bgCanvas.width = width;
     this.bgCanvas.height = height;
-    const ctx = this.bgCanvas.getContext("2d");
-    ctx.fillStyle = "#000";
+    const ctx = this.bgCanvas.getContext('2d');
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, width, height);
     const map = this.layout.map;
     map.forEach((col, x) =>
@@ -151,10 +151,10 @@ export class Scene {
                 wall.setVariant(variant);
                 wall.draw(ctx, x, y);
               }
-            }
+            },
           );
         }
-      })
+      }),
     );
   }
 
@@ -171,14 +171,14 @@ export class Scene {
       x,
       y,
       this.width,
-      this.height
+      this.height,
     );
     this.layout.doors.forEach(({ x, y }) => door.draw(this.ctx, x, y));
     start.draw(this.ctx, this.layout.startPos.x, this.layout.startPos.y);
     exit.draw(this.ctx, this.layout.endPos.x, this.layout.endPos.y);
     this.torches.forEach(({ x, y }) => torch.draw(this.ctx, x, y));
     this.layout.goalPath.forEach(({ x, y }) => electric.draw(this.ctx, x, y));
-    this.skeletons.forEach(skeleton => skeleton.draw(this.ctx));
+    this.enemies.forEach(enemy => enemy.draw(this.ctx));
     this.ctx.drawImage(
       this.fogCanvas,
       x,
@@ -188,7 +188,7 @@ export class Scene {
       x,
       y,
       this.width,
-      this.height
+      this.height,
     );
     this.player.draw(this.ctx);
     if (this.fade) {
