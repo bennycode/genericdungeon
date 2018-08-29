@@ -3,7 +3,7 @@ class Timer {
     this.tick = this.tick.bind(this);
     this.on = this.on.bind(this);
     this.off = this.off.bind(this);
-    
+
     this.tickHooks = {};
     this.frame = 0;
     this.tick();
@@ -11,17 +11,22 @@ class Timer {
 
   tick() {
     requestAnimationFrame(this.tick);
-    Object.values(this.tickHooks).forEach(hook => {
+    Object.entries(this.tickHooks).forEach(([id, hook]) => {
       if (!(this.frame % hook.skip)) {
         hook.callback();
+        if (hook.once) {
+          this.off(id);
+        }
       }
-    })
+    });
     this.frame += 1;
   }
 
-  on(callback, skip = 1) {
-    const id = Math.random().toString(36).substr(2, 8);
-    this.tickHooks[id] = { callback, skip };
+  on(callback, skip = 1, once = false) {
+    const id = Math.random()
+      .toString(36)
+      .substr(2, 8);
+    this.tickHooks[id] = { callback, skip, once };
     return id;
   }
 
@@ -29,6 +34,10 @@ class Timer {
     if (this.tickHooks.hasOwnProperty(id)) {
       delete this.tickHooks[id];
     }
+  }
+
+  once(callback, wait = 1) {
+    return this.on(callback, wait, true);
   }
 }
 

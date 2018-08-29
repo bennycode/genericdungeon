@@ -6,14 +6,21 @@ export class ControlUI {
     this.y = 0;
     if (this.isMobile) {
       this.pad = document.createElement('div');
+      this.attack = document.createElement('div');
       this.pad.className = 'controlPad';
+      this.attack.className = 'attackPad';
 
       this.pad.addEventListener('touchstart', this.handleTouch.bind(this));
       this.pad.addEventListener('touchmove', this.handleTouch.bind(this));
       this.pad.addEventListener('touchend', this.endTouch.bind(this));
       this.pad.addEventListener('touchcancel', this.endTouch.bind(this));
 
+      this.attack.addEventListener('touchstart', this.handleAttack.bind(this));
+      this.attack.addEventListener('touchend', this.endAttack.bind(this));
+      this.attack.addEventListener('touchcancel', this.endAttack.bind(this));
+
       document.body.appendChild(this.pad);
+      document.body.appendChild(this.attack);
     }
   }
 
@@ -26,7 +33,15 @@ export class ControlUI {
         : this.y < 0
           ? 0
           : 2;
-    return this.isTouching && { x: this.x, y: this.y, direction };
+    const isAttacking = this.isAttacking;
+    this.isAttacking = false;
+    return {
+      isTouching: this.isTouching,
+      x: this.x,
+      y: this.y,
+      direction,
+      isAttacking,
+    };
   }
 
   handleTouch(event) {
@@ -41,6 +56,14 @@ export class ControlUI {
 
   endTouch() {
     this.isTouching = false;
+  }
+
+  handleAttack() {
+    this.isAttacking = true;
+  }
+
+  endAttack() {
+    this.isAttacking = false;
   }
 }
 

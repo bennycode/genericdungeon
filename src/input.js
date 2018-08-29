@@ -28,8 +28,17 @@ class Input {
     return this.isPressing(KEYS.DOWN) || this.isPressing(KEYS.S);
   }
 
+  get attack() {
+    return this.isPressing(KEYS.SPACE);
+  }
+
   isPressing(key) {
-    return !!this.keys[key];
+    const isPressingKey = !!this.keys[key];
+    if (triggers.includes(key)) {
+      if (this.keys[key]) console.log('trigger');
+      this.keys[key] = false;
+    }
+    return isPressingKey;
   }
 }
 
@@ -44,4 +53,7 @@ export const KEYS = {
   A: 65,
   S: 83,
   D: 68,
+  SPACE: 32,
 };
+
+const triggers = [KEYS.SPACE];

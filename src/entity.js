@@ -27,8 +27,13 @@ export class Entity {
       x1: this.x + this.paddingLeft,
       x2: this.x + 1 - this.paddingRight,
       y1: this.y + this.paddingTop,
-      y2: this.y + 1 - this.paddingBottom
+      y2: this.y + 1 - this.paddingBottom,
     };
+  }
+
+  isIn(box) {
+    const { x1, x2, y1, y2 } = this.collisionBox;
+    return x1 < box.x2 && x2 > box.x1 && y1 < box.y2 && y2 > box.y1;
   }
 
   move(x, y, floorMap) {

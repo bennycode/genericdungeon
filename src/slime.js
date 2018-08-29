@@ -1,7 +1,8 @@
-import { slime } from './sprite';
+import { slime, deadSlime } from './sprite';
 import { Entity } from './entity';
 import { timer } from './timer';
 import { rand } from './util';
+import { Health } from './health';
 
 export class Slime extends Entity {
   constructor(x, y, obstacleMap) {
@@ -12,6 +13,16 @@ export class Slime extends Entity {
     this.targetX = 0;
     this.targetY = 0;
     this.findNewTarget(obstacleMap);
+    this.health = new Health(20);
+    this.health.onDeath = this.die.bind(this);
+  }
+
+  hit(power) {
+    this.health.sub(power);
+  }
+
+  die() {
+    this.sprite = deadSlime;
   }
 
   findNewTarget(obstacleMap) {
@@ -31,6 +42,9 @@ export class Slime extends Entity {
   }
 
   update(playerX, playerY, obstacleMap) {
+    if (!this.health.isAlive) {
+      return;
+    }
     let x = 0;
     let y = 0;
     const roundedX = Math.round(this.x * 16) >> 4;

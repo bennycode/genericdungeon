@@ -25,3 +25,15 @@ body {
   background: linear-gradient(#aaa, #ccc);
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.5), inset 0px 2px 3px #fff;
 }
+
+.attackPad {
+  opacity: 0.5;
+  width: 10vmax;
+  height: 10vmax;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 10vmax;
+  right: 8vmax;
+  background: linear-gradient(#c88, #a44);
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.5), inset 0px 2px 3px #fff;
+}

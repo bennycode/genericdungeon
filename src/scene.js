@@ -34,12 +34,12 @@ export class Scene {
   }
 
   update() {
-    this.player.update(this.layout.map);
+    this.player.update(this.layout.map, this.enemies);
     const x = Math.round(this.player.x);
     const y = Math.round(this.player.y);
     this.checkOpenDoors();
     this.enemies.forEach(enemy => enemy.update(x, y, this.obstacleMap));
-    this.layout.makeGoalPath({ x, y });
+    //this.layout.makeGoalPath({ x, y });
   }
 
   fadeFrom(color = '#000', speed = 0.01) {
@@ -177,7 +177,7 @@ export class Scene {
     start.draw(this.ctx, this.layout.startPos.x, this.layout.startPos.y);
     exit.draw(this.ctx, this.layout.endPos.x, this.layout.endPos.y);
     this.torches.forEach(({ x, y }) => torch.draw(this.ctx, x, y));
-    this.layout.goalPath.forEach(({ x, y }) => electric.draw(this.ctx, x, y));
+    //this.layout.goalPath.forEach(({ x, y }) => electric.draw(this.ctx, x, y));
     this.enemies.forEach(enemy => enemy.draw(this.ctx));
     this.ctx.drawImage(
       this.fogCanvas,

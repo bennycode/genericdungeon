@@ -1,10 +1,12 @@
-import { characters, things, tileset } from './images';
+import { attacks, characters, dead, things, tileset } from './images';
 import { timer } from './timer';
 
 const loadImage = src => Object.assign(new Image(), { src });
 
 const sheets = {
+  attacks: loadImage(attacks),
   characters: loadImage(characters),
+  dead: loadImage(dead),
   things: loadImage(things),
   tiles: loadImage(tileset),
 };
@@ -25,26 +27,42 @@ export const onload = callback => {
   });
 };
 
-const size = 16;
-
 export class Sprite {
   constructor(sheet, variants) {
     this.sheet = sheet;
-    this.variants = variants;
+    this.variants = Array.isArray(variants) ? variants : [variants];
     this.timerId = '';
     this.setVariant(0);
   }
+
+  onLoopEnd() {}
+
   setVariant(num) {
     if (num === this.variant) return;
     timer.off(this.timerId);
-    this.variant = num;
-    const { tile, speed } = this.variants[num];
+    this.variant = num < this.variants.length ? num : 0;
+    const {
+      tile,
+      speed,
+      loops = Infinity,
+      width = 16,
+      height = 16,
+    } = this.variants[this.variant];
+    this.width = width;
+    this.height = height;
     this.isAnimated = !!speed;
     if (this.isAnimated) {
       let index = 0;
+      let count = 0;
       this.timerId = timer.on(() => {
         index = ++index % tile.length;
-        this.frame = tile[index];
+        if (!index && ++count >= loops) {
+          timer.off(this.timerId);
+          this.variant = -1;
+          this.onLoopEnd();
+        } else {
+          this.frame = tile[index];
+        }
       }, speed);
       this.frame = tile[index];
     } else {
@@ -54,17 +72,9 @@ export class Sprite {
   draw(ctx, x, y) {
     const sheet = sheets[this.sheet];
     const [px, py] = this.frame;
-    ctx.drawImage(
-      sheet,
-      px * size,
-      py * size,
-      size,
-      size,
-      ~~(x * size),
-      ~~(y * size),
-      size,
-      size,
-    );
+    const w = this.width;
+    const h = this.height;
+    ctx.drawImage(sheet, px << 4, py << 4, w, h, ~~(x * 16), ~~(y * 16), w, h);
   }
 }
 
@@ -138,8 +148,9 @@ export const slime = () =>
       tile: [[0, 7], [1, 7], [2, 7], [1, 7]],
     },
   ]);
+export const deadSlime = new Sprite('dead', { tile: [1, 2] });
 
-export const floor = new Sprite('tiles', [{ tile: [2, 1] }]);
+export const floor = new Sprite('tiles', { tile: [2, 1] });
 
 export const wall = new Sprite('tiles', [
   { tile: [1, 3] },
@@ -148,19 +159,42 @@ export const wall = new Sprite('tiles', [
   { tile: [0, 4] },
 ]);
 
-export const door = new Sprite('tiles', [{ tile: [0, 6] }]);
-export const start = new Sprite('tiles', [{ tile: [0, 7] }]);
-export const exit = new Sprite('tiles', [{ tile: [1, 7] }]);
-export const torch = new Sprite('things', [
-  {
-    speed: 6,
-    tile: [[0, 4], [1, 4], [2, 4], [1, 4]],
-  },
-]);
+export const door = new Sprite('tiles', { tile: [0, 6] });
+export const start = new Sprite('tiles', { tile: [0, 7] });
+export const exit = new Sprite('tiles', { tile: [1, 7] });
+export const torch = new Sprite('things', {
+  speed: 6,
+  tile: [[0, 4], [1, 4], [2, 4], [1, 4]],
+});
 
-export const electric = new Sprite('tiles', [
+export const electric = new Sprite('tiles', {
+  speed: 6,
+  tile: [[5, 3], [5, 4]],
+});
+
+export const attack = new Sprite('attacks', [
   {
-    speed: 6,
-    tile: [[5, 3], [5, 4]],
+    speed: 4,
+    tile: [[0, 0], [2, 0], [4, 0]],
+    loops: 1,
+    width: 32,
+  },
+  {
+    speed: 4,
+    tile: [[6, 0], [7, 0], [8, 0]],
+    loops: 1,
+    height: 32,
+  },
+  {
+    speed: 4,
+    tile: [[0, 1], [2, 1], [4, 1]],
+    loops: 1,
+    width: 32,
+  },
+  {
+    speed: 4,
+    tile: [[9, 0], [10, 0], [11, 0]],
+    loops: 1,
+    height: 32,
   },
 ]);
