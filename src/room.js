@@ -1,18 +1,33 @@
 import { Rect } from './rect';
 
 export class Room extends Rect {
-  constructor(x,y,w,h){
-    super(x,y,w,h);
+  constructor(x, y, w, h) {
+    super(x, y, w, h);
     this.dist = Infinity;
     this.isStart = false;
+    this.neighbors = [];
+    this.doors = [];
   }
+
   isOverlapping(room) {
     const overlap = this.getOverlap(room);
     return overlap && overlap.w && overlap.h;
   }
 
+  move(x, y) {
+    this.x += x;
+    this.y += y;
+    this.doors = this.doors.map(door => ({ x: door.x + x, y: door.y + y }));
+  }
+
+  getDoor(neighbor) {
+    const roomIndex = this.neighbors.indexOf(neighbor);
+    return roomIndex >= 0 ? this.doors[roomIndex] : null;
+  }
+
   findAndSetNeighbors(rooms) {
     this.neighbors = rooms.filter(room => this.isValidNeighbor(room));
+    this.doors = this.neighbors.map(room => this.findDoorPosition(room));
   }
 
   isValidNeighbor(room) {

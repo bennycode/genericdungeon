@@ -4,44 +4,19 @@ import { Rect } from './rect';
 import aStar from './astar';
 
 export class Layout {
-  constructor(roomCount) {
+  constructor(roomCount, debugString) {
     this.tileSize = 16;
     this.roomShouldMove = this.roomShouldMove.bind(this);
 
-    this.rooms = this.makeRooms(roomCount);
-    /** debug rooms
-    this.rooms = [
-      [18, 25, 7, 5],
-      [21, 17, 5, 8],
-      [12, 20, 6, 7],
-      [25, 25, 6, 8],
-      [21, 30, 4, 5],
-      [26, 17, 6, 8],
-      [22, 12, 8, 5],
-      [10, 15, 4, 5],
-      [6, 21, 6, 5],
-      [31, 26, 4, 4],
-      [25, 33, 6, 7],
-      [20, 35, 4, 8],
-      [14, 9, 8, 7],
-      [22, 6, 6, 6],
-      [30, 12, 4, 4],
-      [0, 21, 6, 6],
-      [35, 24, 8, 7],
-      [24, 40, 4, 8],
-      [28, 40, 7, 6],
-      [22, 0, 6, 6],
-      [34, 14, 7, 4],
-      [35, 31, 8, 8],
-      [41, 19, 8, 5],
-      [43, 24, 5, 5],
-      [34, 19, 7, 5],
-      [25, 48, 7, 8],
-      [41, 15, 5, 4],
-      [20, 48, 5, 8],
-    ].map(([x, y, w, h]) => new Room(x, y, w, h));
+    if (debugString) {
+      const debugRooms = debugString
+        .match(/.{8}/g)
+        .map(group => group.match(/.{2}/g).map(number => parseInt(number, 16)));
+      this.rooms = debugRooms.map(([x, y, w, h]) => new Room(x, y, w, h));
+    } else {
+      this.rooms = this.makeRooms(roomCount);
+    }
 
-    /**/
     this.fixLayout();
 
     this.setValidNeighbors();
@@ -52,8 +27,12 @@ export class Layout {
     this.normalizeCoords();
     console.log(
       this.rooms
-        .map(room => `[${room.x},${room.y},${room.w},${room.h}]`)
-        .join(','),
+        .map(({ x, y, w, h }) =>
+          `00000000${((x << 24) | (y << 16) | (w << 8) | h).toString(
+            16,
+          )}`.substr(-8),
+        )
+        .join(''),
     );
     this.endRoom = this.rooms[this.rooms.length - 1];
     this.map = this.makeMap();
@@ -118,10 +97,7 @@ export class Layout {
 
   normalizeCoords() {
     const { x, y } = Rect.fromRects(this.rooms);
-    this.rooms.forEach(room => {
-      room.x -= x;
-      room.y -= y;
-    });
+    this.rooms.forEach(room => room.move(-x, -y));
   }
 
   getMostCenterRoom() {
@@ -191,7 +167,7 @@ export class Layout {
     const doors = [];
     this.rooms.forEach(room =>
       room.neighbors.forEach(neighbor => {
-        const { x, y } = room.findDoorPosition(neighbor);
+        const { x, y } = room.getDoor(neighbor);
         if (doors.every(door => door.x !== x || door.y !== y)) {
           doors.push({ x, y });
         }

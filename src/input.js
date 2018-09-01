@@ -35,7 +35,6 @@ class Input {
   isPressing(key) {
     const isPressingKey = !!this.keys[key];
     if (triggers.includes(key)) {
-      if (this.keys[key]) console.log('trigger');
       this.keys[key] = false;
     }
     return isPressingKey;
