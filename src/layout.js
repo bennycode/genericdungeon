@@ -49,7 +49,7 @@ export class Layout {
   makeRooms(count) {
     const makeRoom = () =>
       new Room(rand(20, 30), rand(20, 30), rand(4, 9), rand(4, 9));
-    return Array.from(Array(count), makeRoom);
+    return Array.from({length: count}, makeRoom);
   }
 
   getConnectedRooms(startRoom) {
@@ -181,7 +181,7 @@ export class Layout {
     const allRoomBounds = Rect.fromRects(this.rooms);
     const mapWidth = allRoomBounds.x2 + 1;
     const mapHeight = allRoomBounds.y2 + 1;
-    const map = Array.from(Array(mapWidth), () => Array(mapHeight).fill(false));
+    const map = Array.from({length: mapWidth}, () => Array(mapHeight).fill(false));
     this.rooms.forEach(room => {
       for (let x = room.x + 1; x < room.x2; x++) {
         for (let y = room.y + 1; y < room.y2; y++) {

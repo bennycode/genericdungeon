@@ -1,6 +1,7 @@
 import { Layout } from './layout';
 import { Player } from './player';
 import { Slime } from './slime';
+import { Skeleton } from './skeleton';
 import { floor, wall, start, exit, door, torch, electric } from './sprite';
 import { rand, randFromArray } from './util';
 import { timer } from './timer';
@@ -12,6 +13,8 @@ export class Scene {
     this.ctx = ctx;
     this.width = ctx.canvas.width;
     this.height = ctx.canvas.height;
+    this.offsetX = 0;
+    this.offsetY = 0;
     this.halfWidth = Math.floor(this.width / 2);
     this.halfHeight = Math.floor(this.height / 2);
     this.layout = new Layout(roomCount);
@@ -31,6 +34,9 @@ export class Scene {
     this.obstacleMap = this.updateObstacleMap(this.layout.doors);
     this.torches = this.placeTorches();
     this.enemies = this.placeEnemies(Slime, this.layout.rooms.length);
+    this.enemies = this.enemies.concat(
+      this.placeEnemies(Skeleton, this.layout.rooms.length),
+    );
   }
 
   update() {
@@ -89,8 +95,9 @@ export class Scene {
 
   placeEnemies(enemy, count) {
     const enemies = [];
+    const rooms = this.layout.getOtherRooms(this.layout.startRoom);
     while (enemies.length < count) {
-      const { x, y, x2, y2 } = randFromArray(this.layout.rooms);
+      const { x, y, x2, y2 } = randFromArray(rooms);
       const enemyX = rand(x + 1, x2);
       const enemyY = rand(y + 1, y2);
       enemies.push(new enemy(enemyX, enemyY, this.obstacleMap));
@@ -158,18 +165,15 @@ export class Scene {
     );
   }
 
-  draw() {
-    const x = this.player.screenX - this.halfWidth + 8;
-    const y = this.player.screenY - this.halfHeight + 8;
-    this.ctx.setTransform(1, 0, 0, 1, -x, -y);
+  drawMap() {
     this.ctx.drawImage(
       this.bgCanvas,
-      x,
-      y,
+      this.offsetX,
+      this.offsetY,
       this.width,
       this.height,
-      x,
-      y,
+      this.offsetX,
+      this.offsetY,
       this.width,
       this.height,
     );
@@ -177,24 +181,51 @@ export class Scene {
     start.draw(this.ctx, this.layout.startPos.x, this.layout.startPos.y);
     exit.draw(this.ctx, this.layout.endPos.x, this.layout.endPos.y);
     this.torches.forEach(({ x, y }) => torch.draw(this.ctx, x, y));
+  }
+
+  isInViewport(entity) {
+    const lowX = this.offsetX;
+    const highX = this.offsetX + this.width;
+    const lowY = this.offsetY;
+    const highY = this.offsetY + this.height;
+    const eX1 = entity.screenX;
+    const eY1 = entity.screenY;
+    const eX2 = eX1 + entity.width;
+    const eY2 = eY1 + entity.height;
+
+    return eX2 > lowX && eY2 > lowY && eX1 < highX && eY2 < highY;
+  }
+
+  draw() {
+    this.offsetX = this.player.screenX - this.halfWidth + 8;
+    this.offsetY = this.player.screenY - this.halfHeight + 8;
+    this.ctx.setTransform(1, 0, 0, 1, -this.offsetX, -this.offsetY);
+    this.drawMap();
     //this.layout.goalPath.forEach(({ x, y }) => electric.draw(this.ctx, x, y));
-    this.enemies.forEach(enemy => enemy.draw(this.ctx));
+    const visibleEnemies = this.enemies
+      .filter(this.isInViewport.bind(this))
+      .sort((a, b) => a.y - b.y);
+    const firstEnemyinFront = visibleEnemies.find(({ y }) => y > this.player.y);
+    const frontIndex = visibleEnemies.indexOf(firstEnemyinFront);
+    visibleEnemies.slice(0, frontIndex).forEach(enemy => enemy.draw(this.ctx));
+    this.player.draw(this.ctx);
+    visibleEnemies.slice(frontIndex).forEach(enemy => enemy.draw(this.ctx));
+
     this.ctx.drawImage(
       this.fogCanvas,
-      x,
-      y,
+      this.offsetX,
+      this.offsetY,
       this.width,
       this.height,
-      x,
-      y,
+      this.offsetX,
+      this.offsetY,
       this.width,
       this.height,
     );
-    this.player.draw(this.ctx);
     if (this.fade) {
       this.ctx.fillStyle = this.fadeColor;
       this.ctx.globalAlpha = this.fade;
-      this.ctx.fillRect(x, y, this.width, this.height);
+      this.ctx.fillRect(this.offsetX, this.offsetY, this.width, this.height);
       this.ctx.globalAlpha = 1;
     }
   }
