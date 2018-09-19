@@ -193,7 +193,7 @@ export class Scene {
     const eX2 = eX1 + entity.width;
     const eY2 = eY1 + entity.height;
 
-    return eX2 > lowX && eY2 > lowY && eX1 < highX && eY2 < highY;
+    return eX2 > lowX && eY2 > lowY && eX1 < highX && eY1 < highY;
   }
 
   draw() {
