@@ -204,9 +204,13 @@ export class Scene {
     //this.layout.goalPath.forEach(({ x, y }) => electric.draw(this.ctx, x, y));
     const visibleEnemies = this.enemies
       .filter(this.isInViewport.bind(this))
-      .sort((a, b) => a.y - b.y);
-    const firstEnemyinFront = visibleEnemies.find(({ y }) => y > this.player.y);
-    const frontIndex = visibleEnemies.indexOf(firstEnemyinFront);
+      .sort((a, b) => a.collisionBox.y2 - b.collisionBox.y2);
+    const firstEnemyinFront = visibleEnemies.find(
+      entity => entity.collisionBox.y2 > this.player.collisionBox.y2,
+    );
+    const frontIndex = firstEnemyinFront
+      ? visibleEnemies.indexOf(firstEnemyinFront)
+      : visibleEnemies.length;
     visibleEnemies.slice(0, frontIndex).forEach(enemy => enemy.draw(this.ctx));
     this.player.draw(this.ctx);
     visibleEnemies.slice(frontIndex).forEach(enemy => enemy.draw(this.ctx));
